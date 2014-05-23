@@ -42,13 +42,14 @@ defmodule Riak do
   """
 
   use Application.Behaviour
-  use Riak.Client
 
-  def start() do
-    Riak.Supervisor.start_link()
+  defdelegate [ping, put(obj), find(bucket, key), resolve(bucket, key, index), delete(bucket, key), delete(obj), configure(opts)], to: Riak.Client
+
+  def start do
+    Riak.Supervisor.start_link
   end
 
   def start(_type, _state) do
-    Riak.Supervisor.start_link()
+    Riak.Supervisor.start_link
   end
 end
