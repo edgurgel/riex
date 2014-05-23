@@ -4,7 +4,7 @@ defmodule Riak.Mixfile do
   def project do
     [ app: :'riak-elixir-client',
       version: "0.0.1",
-      elixir: "~> 0.11",
+      elixir: "~> 0.13.2",
       deps: deps ]
   end
 
@@ -15,6 +15,6 @@ defmodule Riak.Mixfile do
   end
 
   defp deps do
-    [{ :riakc, github: "basho/riak-erlang-client"}]
+    [{ :riakc, github: "basho/riak-erlang-client", branch: 'ku-erlang-17-0'}]
   end
 end
