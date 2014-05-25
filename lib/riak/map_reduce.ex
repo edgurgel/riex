@@ -1,13 +1,11 @@
 defmodule Riak.Mapred do
-  def query(inputs, query), do: :gen_server.call(:riak, {:mapred_query, inputs, query})
-  def query(inputs, query, timeout) do
-    :gen_server.call(:riak, {:mapred_query, inputs, query, timeout})
-  end
+  import :riakc_pb_socket
+
+  def query(pid, inputs, query), do: mapred(pid, inputs, query)
+  def query(pid, inputs, query, timeout), do: mapred(pid, inputs, query, timeout)
 
   defmodule Bucket do
-    def query(bucket, query), do: :gen_server.call(:riak, {:mapred_query_bucket, bucket, query})
-    def query(bucket, query, timeout) do
-      :gen_server.call(:riak, {:mapred_query_bucket, bucket, query, timeout})
-    end
+    def query(pid, bucket, query), do: mapred_bucket(pid, bucket, query)
+    def query(pid, bucket, query, timeout), do: mapred_bucket(pid, bucket, query, timeout)
   end
 end

@@ -1,21 +1,25 @@
 defmodule Riak.Bucket do
-  def list, do: :gen_server.call(:riak, {:list_buckets})
-  def list(timeout), do: :gen_server.call(:riak, {:list_buckets, timeout})
+  import :riakc_pb_socket
 
-  def keys(bucket), do: :gen_server.call(:riak, {:list_keys, bucket})
-  def keys(bucket, timeout), do: :gen_server.call(:riak, {:list_keys, bucket, timeout})
+  def list(pid), do: list_buckets(pid)
+  def list(pid, timeout), do: list_buckets(pid, timeout)
 
-  def get(bucket), do: :gen_server.call(:riak, {:props, bucket})
+  def keys(pid, bucket), do: list_keys(pid, bucket)
+  def keys(pid, bucket, timeout), do: list_keys(pid, bucket, timeout)
+
+  def get(pid, bucket), do: get_bucket(pid, bucket)
   #Possible Props: [n_val: 3, allow_mult: false, last_write_wins: false, basic_quorum: false, notfound_ok: true, precommit: [], postcommit: [], pr: 0, r: :quorum, w: :quorum, pw: 0, dw: :quorum, rw: :quorum]}
 
-  def put(bucket, props), do: :gen_server.call(:riak, {:set_props, bucket, props})
-  def put(bucket, type, props), do: :gen_server.call(:riak, {:set_props, bucket, type, props})
+  def put(pid, bucket, props), do: set_bucket(pid, bucket, props)
+  def put(pid, bucket, type, props) do
+    set_bucket(pid, {type, bucket}, props)
+  end
 
-  def reset(bucket), do: :gen_server.call(:riak, {:reset, bucket})
+  def reset(pid, bucket), do: reset_bucket(pid, bucket)
 
   defmodule Type do
-    def get(type), do: :gen_server.call(:riak, {:get_type, type})
-    def put(type, props), do: :gen_server.call(:riak, {:set_type, type, props})
-    def reset(type), do: :gen_server.call(:riak, {:reset_type, type})
+    def get(pid, type), do: get_bucket_type(pid, type)
+    def put(pid, type, props), do: set_bucket_type(pid, type, props)
+    def reset(pid, bucket), do: reset_bucket(pid, bucket)
   end
 end
