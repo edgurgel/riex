@@ -1,6 +1,21 @@
 ExUnit.start
 
-defmodule RiakHelper do
+defmodule Riak.Case do
+  use ExUnit.CaseTemplate
+
+  setup do
+    {:ok, pid } = Riak.start_link('127.0.0.1', 8087)
+    {:ok, pid: pid}
+  end
+
+  teardown context do
+    pid = context[:pid]
+    Riak.Helper.clean!(pid)
+    :ok
+  end
+end
+
+defmodule Riak.Helper do
   def clean!(pid) do
     for bucket <- Riak.Bucket.list!(pid), key <- Riak.Bucket.keys!(pid, bucket) do
       Riak.delete(pid, bucket, key)

@@ -1,17 +1,6 @@
 defmodule RiakTest do
-  use ExUnit.Case
-  import RiakHelper
-
-  setup do
-    {:ok, pid } = Riak.start_link('127.0.0.1', 8087)
-    {:ok, pid: pid}
-  end
-
-  teardown context do
-    pid = context[:pid]
-    clean!(pid)
-    :ok
-  end
+  use Riak.Case
+  import Riak.Helper
 
   test "crud operations and siblings", context do
     pid = context[:pid]
@@ -185,18 +174,5 @@ defmodule RiakTest do
     assert u.data == h
 
     assert :ok == Riak.Bucket.reset pid, "user"
-  end
-
-  test "counters", context do
-    pid = context[:pid]
-    {me, se, mi} = :erlang.now
-    counter_key = "my_counter_#{me}#{se}#{mi}"
-
-    assert :ok == Riak.Counter.enable(pid, "user")
-    assert :ok == Riak.Counter.increment(pid, "user", counter_key, 1)
-    assert :ok == Riak.Counter.increment(pid, "user", counter_key, 2)
-    assert :ok == Riak.Counter.increment(pid, "user", counter_key, 3)
-
-    assert 6 == Riak.Counter.value(pid, "user", counter_key)
   end
 end

@@ -1,17 +1,5 @@
 defmodule Riak.BucketTest do
-  use ExUnit.Case
-  import RiakHelper
-
-  setup do
-    {:ok, pid } = Riak.start_link('127.0.0.1', 8087)
-    {:ok, pid: pid}
-  end
-
-  teardown context do
-    pid = context[:pid]
-    clean!(pid)
-    :ok
-  end
+  use Riak.Case
 
   test "list bucket", context do
     {:ok, buckets} = Riak.Bucket.list context[:pid]
