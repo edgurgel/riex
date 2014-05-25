@@ -35,10 +35,8 @@ defmodule Riak.Client do
   def delete(bucket, key), do: :gen_server.call(:riak, {:delete, bucket, key})
   def delete(obj), do: :gen_server.call(:riak, {:delete, obj.bucket, obj.key})
 
-  # Riak modules and functions
-
-  def build_sibling_list([{_md, val}|t], final_list), do: build_sibling_list(t,[val|final_list])
-  def build_sibling_list([], final_list), do: final_list
+  defp build_sibling_list([{_md, val}|t], final_list), do: build_sibling_list(t,[val|final_list])
+  defp build_sibling_list([], final_list), do: final_list
 
 
   # Start Link to Riak
