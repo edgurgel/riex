@@ -2,7 +2,7 @@ defmodule Riak.Object do
   @moduledoc """
   The Data wrapper makes it convenient to work with Riak data in Elixir
   """
-  defstruct [bucket: nil, key: nil, data: nil, metadata: nil, vclock: nil, content_type: "application/json"]
+  defstruct [bucket: nil, type: nil, key: :undefined, data: nil, metadata: nil, vclock: nil, content_type: "application/json"]
   def get_metadata(obj, key) do
     case :riakc_obj.get_user_metadata_entry(obj.metadata, key) do
       :notfound -> nil
@@ -82,8 +82,6 @@ defmodule Riak.Object do
   end
 
   def to_robj(obj) do
-    unless obj.key, do: obj = %{obj | key: :undefined}
-
     robj = :riakc_obj.new(obj.bucket,
                           obj.key,
                           obj.data,
