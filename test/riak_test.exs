@@ -45,14 +45,14 @@ defmodule RiakTest do
     {me, se, mi} = :erlang.now
     key = "#{me}#{se}#{mi}"
 
-    u = RObj.create(bucket: "user", key: key, data: "Drew Kerrigan")
+    u = Riak.Object.create(bucket: "user", key: key, data: "Drew Kerrigan")
       |> Riak.put
 
     assert u != nil
 
     assert :ok == Riak.delete "user", u.key
 
-    u = RObj.create(bucket: "user", data: "Drew Kerrigan")
+    u = Riak.Object.create(bucket: "user", data: "Drew Kerrigan")
     assert u.key == :undefined
     u = Riak.put u
     assert u.key != :undefined
@@ -60,7 +60,7 @@ defmodule RiakTest do
     # Get the object again so we don't create a sibling
     u = Riak.find "user", u.key
 
-    u = u.data("Something Else")
+    u = %{u | data: "Something Else"}
       |> Riak.put
 
     unewdata = Riak.find "user", u.key
@@ -84,47 +84,47 @@ defmodule RiakTest do
   test "user metadata" do
     {me, se, mi} = :erlang.now
     key = "#{me}#{se}#{mi}"
-    mdtest = RObj.create(bucket: "user", key: key, data: "Drew Kerrigan")
-      |> RObj.put_metadata({"my_key", "my_value"})
-      |> RObj.put_metadata({"my_key2", "my_value2"})
+    mdtest = Riak.Object.create(bucket: "user", key: key, data: "Drew Kerrigan")
+      |> Riak.Object.put_metadata({"my_key", "my_value"})
+      |> Riak.Object.put_metadata({"my_key2", "my_value2"})
       |> Riak.put
-      |> RObj.get_metadata("my_key")
+      |> Riak.Object.get_metadata("my_key")
 
     assert mdtest == "my_value"
 
     u = Riak.find "user", key
 
     mdtest2 = u
-      |> RObj.get_metadata("my_key2")
+      |> Riak.Object.get_metadata("my_key2")
 
     assert mdtest2 == "my_value2"
 
     mdtest3 = u
-      |> RObj.get_all_metadata()
+      |> Riak.Object.get_all_metadata()
       |> is_list
 
     assert mdtest3
 
-    u = RObj.delete_metadata(u, "my_key")
+    u = Riak.Object.delete_metadata(u, "my_key")
 
-    assert nil == RObj.get_metadata(u, "my_key")
-    assert "my_value2" == RObj.get_metadata(u, "my_key2")
+    assert nil == Riak.Object.get_metadata(u, "my_key")
+    assert "my_value2" == Riak.Object.get_metadata(u, "my_key2")
 
-    u = RObj.delete_all_metadata(u)
+    u = Riak.Object.delete_all_metadata(u)
 
-    assert nil == RObj.get_metadata(u, "my_key2")
-    assert [] == RObj.get_all_metadata(u)
+    assert nil == Riak.Object.get_metadata(u, "my_key2")
+    assert [] == Riak.Object.get_all_metadata(u)
   end
 
   test "secondary indexes" do
     {me, se, mi} = :erlang.now
     key = "#{me}#{se}#{mi}"
-    u = RObj.create(bucket: "user", key: key, data: "Drew Kerrigan")
-      |> RObj.put_index({:binary_index, "first_name"}, ["Drew"])
-      |> RObj.put_index({:binary_index, "last_name"}, ["Kerrigan"])
+    u = Riak.Object.create(bucket: "user", key: key, data: "Drew Kerrigan")
+      |> Riak.Object.put_index({:binary_index, "first_name"}, ["Drew"])
+      |> Riak.Object.put_index({:binary_index, "last_name"}, ["Kerrigan"])
       |> Riak.put
 
-    assert RObj.get_index(u, {:binary_index, "first_name"}) == ["Drew"]
+    assert Riak.Object.get_index(u, {:binary_index, "first_name"}) == ["Drew"]
 
     {keys, terms, continuation} = Riak.Index.query("user", {:binary_index, "first_name"}, "Drew", [])
     assert is_list(keys)
@@ -135,47 +135,47 @@ defmodule RiakTest do
     assert terms == :undefined
     assert continuation == :undefined
 
-    u = RObj.delete_index(u, {:binary_index, "first_name"})
+    u = Riak.Object.delete_index(u, {:binary_index, "first_name"})
       |> Riak.put
 
-    assert RObj.get_index(u, {:binary_index, "first_name"}) == nil
+    assert Riak.Object.get_index(u, {:binary_index, "first_name"}) == nil
 
-    assert is_list(RObj.get_all_indexes(u))
+    assert is_list(Riak.Object.get_all_indexes(u))
 
-    indextest = u |> RObj.delete_all_indexes()
-      |> RObj.get_all_indexes()
+    indextest = u |> Riak.Object.delete_all_indexes()
+      |> Riak.Object.get_all_indexes()
 
     assert indextest == []
   end
 
   test "links" do
-    RObj.create(bucket: "user", key: "drew1", data: "Drew1 Kerrigan")
+    Riak.Object.create(bucket: "user", key: "drew1", data: "Drew1 Kerrigan")
       |> Riak.put
-    RObj.create(bucket: "user", key: "drew2", data: "Drew2 Kerrigan")
+    Riak.Object.create(bucket: "user", key: "drew2", data: "Drew2 Kerrigan")
       |> Riak.put
 
     {me, se, mi} = :erlang.now
     key = "#{me}#{se}#{mi}"
-    u = RObj.create(bucket: "user", key: key, data: "Drew Kerrigan")
-      |> RObj.put_link("my_tag", "user", "drew1")
-      |> RObj.put_link("my_tag", "user", "drew2")
+    u = Riak.Object.create(bucket: "user", key: key, data: "Drew Kerrigan")
+      |> Riak.Object.put_link("my_tag", "user", "drew1")
+      |> Riak.Object.put_link("my_tag", "user", "drew2")
       |> Riak.put
 
-    assert RObj.get_link(u, "my_tag") == [{"user", "drew1"}, {"user", "drew2"}]
+    assert Riak.Object.get_link(u, "my_tag") == [{"user", "drew1"}, {"user", "drew2"}]
 
-    assert RObj.delete_link(u, "my_tag") |> RObj.get_link("my_tag") == nil
+    assert Riak.Object.delete_link(u, "my_tag") |> Riak.Object.get_link("my_tag") == nil
 
     # Get the object again so we don't create a sibling
     u = Riak.find "user", key
 
-    u   |> RObj.put_link("my_tag", "user", "drew1")
-      |> RObj.put_link("my_tag", "user", "drew2")
+    u   |> Riak.Object.put_link("my_tag", "user", "drew1")
+      |> Riak.Object.put_link("my_tag", "user", "drew2")
       |> Riak.put
 
-    assert RObj.get_link(u, "my_tag") == [{"user", "drew1"}, {"user", "drew2"}]
+    assert Riak.Object.get_link(u, "my_tag") == [{"user", "drew1"}, {"user", "drew2"}]
 
-    assert is_list(RObj.get_all_links(u))
-    assert RObj.delete_all_links(u) |> RObj.get_all_links() == []
+    assert is_list(Riak.Object.get_all_links(u))
+    assert Riak.Object.delete_all_links(u) |> Riak.Object.get_all_links() == []
   end
 
   test "ping" do
@@ -188,9 +188,9 @@ defmodule RiakTest do
     {me, se, mi} = :erlang.now
     key = "#{me}#{se}#{mi}"
 
-    RObj.create(bucket: "user", key: key, data: "Drew1 Kerrigan")
+    Riak.Object.create(bucket: "user", key: key, data: "Drew1 Kerrigan")
       |> Riak.put
-    RObj.create(bucket: "user", key: key, data: "Drew2 Kerrigan")
+    Riak.Object.create(bucket: "user", key: key, data: "Drew2 Kerrigan")
       |> Riak.put
 
     u = Riak.find "user", key

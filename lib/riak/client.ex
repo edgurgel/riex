@@ -53,9 +53,9 @@ defmodule Riak.Client do
 
   # Store a Riak Object
   def handle_call({:store, obj }, _from, state) do
-    case :riakc_pb_socket.put(state.socket_pid, obj.to_robj) do
+    case :riakc_pb_socket.put(state.socket_pid, Riak.Object.to_robj(obj)) do
       {:ok, new_object} ->
-        { :reply, obj.key(:riakc_obj.key(new_object)), state }
+        { :reply, %{obj | key: :riakc_obj.key(new_object)}, state }
       :ok ->
         { :reply, obj, state }
       _ ->
@@ -70,7 +70,7 @@ defmodule Riak.Client do
         if :riakc_obj.value_count(object) > 1 do
           { :reply, build_sibling_list(:riakc_obj.get_contents(object),[]), state }
         else
-          { :reply, RObj.from_robj(object), state }
+          { :reply, Riak.Object.from_robj(object), state }
         end
       _ -> { :reply, nil, state }
     end
