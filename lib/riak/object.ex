@@ -74,6 +74,7 @@ defmodule Riak.Object do
 
   def from_robj(robj) do
     %Riak.Object{bucket: :riakc_obj.bucket(robj),
+                 type: :riakc_obj.bucket_type(robj),
                  key: :riakc_obj.key(robj),
                  data: :riakc_obj.get_update_value(robj),
                  metadata: :riakc_obj.get_update_metadata(robj),
