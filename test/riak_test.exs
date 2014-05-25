@@ -19,9 +19,7 @@ defmodule RiakTest do
 
   teardown context do
     pid = context[:pid]
-    for bucket <- Riak.Bucket.list!(pid), key <- Riak.Bucket.keys!(pid, bucket) do
-      Riak.delete(pid, bucket, key)
-    end
+    RiakHelper.clean!(pid)
     :ok
   end
 
