@@ -17,6 +17,14 @@ defmodule RiakTest do
     {:ok, pid: pid}
   end
 
+  teardown context do
+    pid = context[:pid]
+    for bucket <- Riak.Bucket.list!(pid), key <- Riak.Bucket.keys!(pid, bucket) do
+      Riak.delete(pid, bucket, key)
+    end
+    :ok
+  end
+
   test "list bucket", context do
     {:ok, buckets} = Riak.Bucket.list context[:pid]
     assert is_list(buckets)
