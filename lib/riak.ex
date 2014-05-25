@@ -41,7 +41,7 @@ defmodule Riak do
   on [github](https://github.com/drewkerrigan/riak-elixir-client).
   """
 
-  def start_link(host, port) do
+  def start_link(host \\ '127.0.0.1', port \\ 8087) do
     :riakc_pb_socket.start_link(host, port)
   end
 
