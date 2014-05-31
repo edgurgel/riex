@@ -6,14 +6,23 @@ defmodule Riak.BucketTest do
     assert is_list(buckets)
   end
 
+  test "list! bucket", context do
+    buckets = Riak.Bucket.list! context[:pid]
+    assert is_list(buckets)
+  end
+
   test "list keys", context do
-    {:ok, users} = Riak.Bucket.keys context[:pid], "user"
-    assert is_list(users)
+    {:ok, keys} = Riak.Bucket.keys context[:pid], "user"
+    assert is_list(keys)
+  end
+
+  test "list! keys", context do
+    keys = Riak.Bucket.keys! context[:pid], "user"
+    assert is_list(keys)
   end
 
   test "bucket props", context do
     pid = context[:pid]
-    # Currently there seems to be a bug that returns "Creating new atoms from protobuffs message!"
     assert :ok == Riak.Bucket.put pid, "user", [{:notfound_ok, false}]
 
     {:ok, props} = Riak.Bucket.get pid, "user"
