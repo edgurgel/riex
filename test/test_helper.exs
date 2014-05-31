@@ -22,6 +22,11 @@ defmodule Riak.Helper do
     end
   end
 
+  def random_key do
+    {me, se, mi} = :erlang.now
+    "#{me}#{se}#{mi}"
+  end
+
   # helper for chosing the index of a sibling value list
   def index_of(search, [search|_], index) do
     index
