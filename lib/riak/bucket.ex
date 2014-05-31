@@ -26,7 +26,6 @@ defmodule Riak.Bucket do
   end
 
   def get(pid, bucket), do: get_bucket(pid, bucket)
-  #Possible Props: [n_val: 3, allow_mult: false, last_write_wins: false, basic_quorum: false, notfound_ok: true, precommit: [], postcommit: [], pr: 0, r: :quorum, w: :quorum, pw: 0, dw: :quorum, rw: :quorum]}
 
   def put(pid, bucket, props), do: set_bucket(pid, bucket, props)
   def put(pid, bucket, type, props) do
@@ -39,5 +38,13 @@ defmodule Riak.Bucket do
     def get(pid, type), do: get_bucket_type(pid, type)
     def put(pid, type, props), do: set_bucket_type(pid, type, props)
     def reset(pid, bucket), do: reset_bucket(pid, bucket)
+  end
+
+  # This is important to "register" the atoms
+  def possible_props do
+    [n_val: 3, old_vclock: 86400, young_vclock: 20, big_vclock: 50, small_vclock: 50, allow_mult: false, last_write_wins: false,
+      basic_quorum: false, notfound_ok: false, precommit: [], postcommit: [], chash_keyfun: {:riak_core_util, :chash_std_keyfun},
+      linkfun: {:modfun, :riak_kv_wm_link_walker, :mapreduce_linkfun}, pr: 0, r: :quorum, w: :quorum, pw: 0, dw: :quorum,
+      rw: :quorum]
   end
 end
