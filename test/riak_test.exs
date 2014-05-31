@@ -2,10 +2,39 @@ defmodule RiakTest do
   use Riak.Case
   import Riak.Helper
 
+  test "put", context do
+    pid = context[:pid]
+    key = Riak.Helper.random_key
+
+    o =  Riak.Object.create(bucket: "user", key: key, data: "Drew Kerrigan")
+
+    assert Riak.put(pid, o) == o
+  end
+
+  test "find", context do
+    pid = context[:pid]
+    key = Riak.Helper.random_key
+
+    data = "Drew Kerrigan"
+    o =  Riak.Object.create(bucket: "user", key: key, data: data)
+    Riak.put(pid, o)
+
+    assert Riak.find(pid, "user", key).data == o.data
+  end
+
+  test "delete", context do
+    pid = context[:pid]
+    key = Riak.Helper.random_key
+
+    o =  Riak.Object.create(bucket: "user", key: key, data: "Drew Kerrigan")
+    Riak.put(pid, o)
+
+    assert Riak.delete(pid, o) == :ok
+  end
+
   test "crud operations and siblings", context do
     pid = context[:pid]
-    {me, se, mi} = :erlang.now
-    key = "#{me}#{se}#{mi}"
+    key = Riak.Helper.random_key
 
     o =  Riak.Object.create(bucket: "user", key: key, data: "Drew Kerrigan")
     u = Riak.put(pid, o)
@@ -45,8 +74,8 @@ defmodule RiakTest do
 
   test "user metadata", context do
     pid = context[:pid]
-    {me, se, mi} = :erlang.now
-    key = "#{me}#{se}#{mi}"
+    key = Riak.Helper.random_key
+
     mdtest = Riak.Object.create(bucket: "user", key: key, data: "Drew Kerrigan")
       |> Riak.Object.put_metadata({"my_key", "my_value"})
       |> Riak.Object.put_metadata({"my_key2", "my_value2"})
@@ -82,8 +111,8 @@ defmodule RiakTest do
 
   test "secondary indexes", context do
     pid = context[:pid]
-    {me, se, mi} = :erlang.now
-    key = "#{me}#{se}#{mi}"
+    key = Riak.Helper.random_key
+
     o = Riak.Object.create(bucket: "user", key: key, data: "Drew Kerrigan")
       |> Riak.Object.put_index({:binary_index, "first_name"}, ["Drew"])
       |> Riak.Object.put_index({:binary_index, "last_name"}, ["Kerrigan"])
@@ -121,8 +150,8 @@ defmodule RiakTest do
     o2 = Riak.Object.create(bucket: "user", key: "drew2", data: "Drew2 Kerrigan")
     Riak.put(pid, o2)
 
-    {me, se, mi} = :erlang.now
-    key = "#{me}#{se}#{mi}"
+    key = Riak.Helper.random_key
+
     o = Riak.Object.create(bucket: "user", key: key, data: "Drew Kerrigan")
       |> Riak.Object.put_link("my_tag", "user", "drew1")
       |> Riak.Object.put_link("my_tag", "user", "drew2")
@@ -153,8 +182,7 @@ defmodule RiakTest do
     pid = context[:pid]
     assert :ok == Riak.Bucket.put pid, "user", [{:allow_mult, true}]
 
-    {me, se, mi} = :erlang.now
-    key = "#{me}#{se}#{mi}"
+    key = Riak.Helper.random_key
 
     o1 = Riak.Object.create(bucket: "user", key: key, data: "Drew1 Kerrigan")
     Riak.put(pid, o1)
