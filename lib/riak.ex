@@ -1,3 +1,4 @@
+use Riak.Module
 defmodule Riak do
   @moduledoc """
   A Client for Riak.
@@ -7,8 +8,7 @@ defmodule Riak do
   sends a message to the OTP server running locally which starts
   the protobuf link with your Riak cluster.
 
-      iex> Riak.start
-      iex> Riak.configure(host: '127.0.0.1', port: 8087)
+      iex> Riak.Connection.start_link
 
   The client supports secondary indexes. Remember to use a storage
   backend that support secondary indexes (such as *leveldb*), in
@@ -19,35 +19,30 @@ defmodule Riak do
   inserted data needs to be an `RObj` created like this:
 
       iex> u = RObj.create(bucket: "user", key: "my_key", data: "Drew Kerrigan")
-      iex> Riak.put u
+      iex> Riak.put pid, u
 
   To get a data entry out of the database, use the `find` function.
 
-      iex> u = Riak.find "user", "my_key"
+      iex> u = Riak.find pid, "user", "my_key"
 
   Updating data is done with by fetching a data entry, updating its
   data and putting it back into the database using `find` and `put`.
 
-      iex> u = Riak.find "user", "my_key"
+      iex> u = Riak.find pid, "user", "my_key"
       iex> u = u.data("Updated Data")
-      iex> Riak.put u
+      iex> Riak.put pid, u
 
   Deleting data from the database is done using the `delete` function.
 
-      iex> Riak.delete "user", "my_key"
+      iex> Riak.delete pid, "user", "my_key"
 
   The client support secondary indexes, links and siblings. This is
-  work in progress, and any help is greatly appreciated. Fork the code
-  on [github](https://github.com/drewkerrigan/riak-elixir-client).
+  work in progress, and any help is greatly appreciated.
   """
 
-  def start_link(host \\ '127.0.0.1', port \\ 8087) do
-    :riakc_pb_socket.start_link(host, port)
-  end
+  def ping(pid) when is_pid(pid), do: :riakc_pb_socket.ping(pid)
 
-  def ping(pid), do: :riakc_pb_socket.ping(pid)
-
-  def put(pid, obj) do
+  def put(pid, obj) when is_pid(pid) do
     case :riakc_pb_socket.put(pid, Riak.Object.to_robj(obj)) do
       {:ok, new_object} -> %{obj | key: :riakc_obj.key(new_object)}
       :ok -> obj
@@ -55,7 +50,7 @@ defmodule Riak do
     end
   end
 
-  def find(pid, bucket, key) do
+  def find(pid, bucket, key) when is_pid(pid) do
     case :riakc_pb_socket.get(pid, bucket, key) do
       {:ok, object} ->
         if :riakc_obj.value_count(object) > 1 do
@@ -70,7 +65,7 @@ defmodule Riak do
   defp build_sibling_list([{_md, val}|t], final_list), do: build_sibling_list(t,[val|final_list])
   defp build_sibling_list([], final_list), do: final_list
 
-  def resolve(pid, bucket, key, index) do
+  def resolve(pid, bucket, key, index) when is_pid(pid) do
     case :riakc_pb_socket.get(pid, bucket, key) do
       {:ok, object} ->
         new_object = :riakc_obj.select_sibling(index, object)
@@ -79,6 +74,6 @@ defmodule Riak do
     end
   end
 
-  def delete(pid, bucket, key), do: :riakc_pb_socket.delete(pid, bucket, key)
-  def delete(pid, obj), do: delete(pid, obj.bucket, obj.key)
+  def delete(pid, bucket, key) when is_pid(pid), do: :riakc_pb_socket.delete(pid, bucket, key)
+  def delete(pid, obj) when is_pid(pid), do: delete(pid, obj.bucket, obj.key)
 end

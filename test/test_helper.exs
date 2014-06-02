@@ -4,7 +4,7 @@ defmodule Riak.Case do
   use ExUnit.CaseTemplate
 
   setup do
-    {:ok, pid } = Riak.start_link('127.0.0.1', 8087)
+    {:ok, pid } = Riak.Connection.start_link('127.0.0.1', 8087)
     {:ok, pid: pid}
   end
 

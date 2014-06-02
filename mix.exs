@@ -10,10 +10,12 @@ defmodule Riak.Mixfile do
 
   # Configuration for the OTP application
   def application do
-    []
+    [ applications: [ :exlager, :pooler ] ]
   end
 
   defp deps do
-    [{ :riakc, github: "basho/riak-erlang-client", branch: 'ku-erlang-17-0'}]
+    [ {:pooler, github: "seth/pooler"},
+      {:exlager, github: "khia/exlager"},
+      {:riakc, github: "basho/riak-erlang-client", branch: 'ku-erlang-17-0'}]
   end
 end
