@@ -1,5 +1,5 @@
-use Riak.Module
 defmodule Riak do
+  import Riak.Pool
   @moduledoc """
   A Client for Riak.
 
@@ -39,10 +39,9 @@ defmodule Riak do
   The client support secondary indexes, links and siblings. This is
   work in progress, and any help is greatly appreciated.
   """
+  defpool ping(pid) when is_pid(pid), do: :riakc_pb_socket.ping(pid)
 
-  def ping(pid) when is_pid(pid), do: :riakc_pb_socket.ping(pid)
-
-  def put(pid, obj) when is_pid(pid) do
+  defpool put(pid, obj) when is_pid(pid) do
     case :riakc_pb_socket.put(pid, Riak.Object.to_robj(obj)) do
       {:ok, new_object} -> %{obj | key: :riakc_obj.key(new_object)}
       :ok -> obj
@@ -50,7 +49,7 @@ defmodule Riak do
     end
   end
 
-  def find(pid, bucket, key) when is_pid(pid) do
+  defpool find(pid, bucket, key) when is_pid(pid) do
     case :riakc_pb_socket.get(pid, bucket, key) do
       {:ok, object} ->
         if :riakc_obj.value_count(object) > 1 do
@@ -65,7 +64,7 @@ defmodule Riak do
   defp build_sibling_list([{_md, val}|t], final_list), do: build_sibling_list(t,[val|final_list])
   defp build_sibling_list([], final_list), do: final_list
 
-  def resolve(pid, bucket, key, index) when is_pid(pid) do
+  defpool resolve(pid, bucket, key, index) when is_pid(pid) do
     case :riakc_pb_socket.get(pid, bucket, key) do
       {:ok, object} ->
         new_object = :riakc_obj.select_sibling(index, object)
@@ -74,6 +73,6 @@ defmodule Riak do
     end
   end
 
-  def delete(pid, bucket, key) when is_pid(pid), do: :riakc_pb_socket.delete(pid, bucket, key)
-  def delete(pid, obj) when is_pid(pid), do: delete(pid, obj.bucket, obj.key)
+  defpool delete(pid, obj) when is_pid(pid), do: delete(pid, obj.bucket, obj.key)
+  defpool delete(pid, bucket, key) when is_pid(pid), do: :riakc_pb_socket.delete(pid, bucket, key)
 end

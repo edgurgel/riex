@@ -1,47 +1,38 @@
-defmodule Riak.Module do
+defmodule Riak.Pool do
   @moduledoc """
   [EXPERIMENTAL]
-  This module changes defmodule to define functions with a
+  This module adds defpool to define functions with a
   lower arity for each function so:
 
   Riak.put(pid, bucket, key, data) ->
   Riak.put(bucket, key, data) that calls the previous function
   with a pid from the pool
   """
-  @doc false
-  defmacro __using__(_opts) do
+  defmacro defpool(args, do: block) do
+    {{name, _, args}, guards} = extract_guards(args)
+    [_pid_arg | other_args] = args
+    has_guards = (guards != [])
     quote do
-      import Riak.Module
-      import Kernel, except: [defmodule: 2]
-    end
-  end
-
-  defmacro defmodule(name, block) do
-    expanded = Macro.expand(name, __CALLER__)
-    quote do
-      defmodule unquote(name) do
-        unquote(block)
-        definitions = Enum.map Module.definitions_in(unquote(expanded), :def), &Riak.Module.define_lower_arity_function/1
-        Module.eval_quoted(unquote(expanded), definitions)
+      if unquote(has_guards) do
+        def unquote(name)(unquote_splicing(args)) when unquote(hd(guards)) do
+          unquote(block)
+        end
+      else
+        def unquote(name)(unquote_splicing(args)) do
+          unquote(block)
+        end
       end
-    end
-  end
-
-  @doc false
-  def define_lower_arity_function({func_name, arity}) do
-    args = arguments(arity)
-    quote do
-      def unquote(func_name)(unquote_splicing(args)) do
+      def unquote(name)(unquote_splicing(other_args)) do
         pid = :pooler.take_group_member(:riak)
-        result = unquote(func_name)(pid, unquote_splicing(args))
+        result = unquote(name)(pid, unquote_splicing(other_args))
         :pooler.return_group_member(:riak, pid, :ok)
         result
       end
     end
   end
 
-  defp arguments(arity) when arity > 1 do
-    Enum.map(1..arity-1, &{:"arg#{&1}", [], nil})
-  end
-  defp arguments(_), do: []
+  defp extract_guards({:when, _, [left, right]}), do: {left, extract_or_guards(right)}
+  defp extract_guards(else_), do: {else_, []}
+  defp extract_or_guards({:when, _, [left, right]}), do: [left|extract_or_guards(right)];
+  defp extract_or_guards(term), do: [term]
 end
