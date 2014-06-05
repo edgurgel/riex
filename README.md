@@ -33,9 +33,9 @@ storage_backend = leveldb
 
 Add this project as a depency in your mix.exs
 
-```
+```elixir
 defp deps do
-	[{ :'riak-elixir-client', github: "drewkerrigan/riak-elixir-client" }]
+  [{ :'riak-elixir-client', github: "edgurgel/riak-elixir-client" }]
 end
 ```
 
@@ -51,58 +51,59 @@ Compile
 mix
 ```
 
-###Configure Riak
+###Establishing a Riak connection
 
-```
-Riak.start
-Riak.configure(host: '127.0.0.1', port: 10017)
+```elixir
+{:ok, pid} = Riak.Connection.start_link('127.0.0.1', 8087) # Default values
 ```
 
 ###Save a value
 
 ```
-u = RObj.create(bucket: "user", key: "my_key", data: "Drew Kerrigan")
-  |> Riak.put
+o = RObj.create(bucket: "user", key: "my_key", data: "Drew Kerrigan")
+Riak.put(pid, o)
+
 ```
 
 ###Find an object
 
 ```
-u = Riak.find "user", "my_key"
+o = Riak.find(pid, "user", "my_key")
 ```
 
 ###Update an object
 
 ```
-u = u.data("Something Else")
-  |> Riak.put
+o = %{o | data: "Something Else"}
+Riak.put(pid, o)
 ```
 
 ###Delete an object
 
 Using key
 
-```
-Riak.delete "user", key
+```elixir
+Riak.delete(pid, "user", key)
 ```
 
 Using object
 
-```
-Riak.delete u
+```elixir
+Riak.delete(pid, o)
 ```
 
-####For a more functionality, check `test/riak_test.exs`
+####For a more functionality, check `test/` directory
 
 ###Run tests
 
 ```
-mix test
+MIX_ENV=test mix do deps.get, test
 ```
 
 ### License
 
 Copyright 2012-2013 Drew Kerrigan.
+Copyright 2014 Eduardo Gurgel.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
