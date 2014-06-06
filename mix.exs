@@ -16,6 +16,6 @@ defmodule Riak.Mixfile do
   defp deps do
     [ {:pooler, github: "seth/pooler"},
       {:exlager, github: "khia/exlager"},
-      {:riakc, github: "basho/riak-erlang-client", branch: 'ku-erlang-17-0'}]
+      {:riakc, github: "basho/riak-erlang-client"}]
   end
 end

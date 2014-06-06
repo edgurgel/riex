@@ -4,5 +4,5 @@
   "meck": {:git, "git://github.com/basho/meck.git", "d4730c6d47e437b1dcd170551506e7b10596cd5a", [tag: "0.8.1p1"]},
   "pooler": {:git, "git://github.com/seth/pooler.git", "fee0aa40a0b99fadacae349bb6a6924dc2d3fa4a", []},
   "protobuffs": {:git, "git://github.com/basho/erlang_protobuffs.git", "5257dfe4e000b58487af89b849c7336ffa9bae82", [tag: "0.8.1p4"]},
-  "riak_pb": {:git, "git://github.com/basho/riak_pb", "a6f2e487489c82708ea210828839a90d91a7245b", [tag: "2.0.0.15"]},
-  "riakc": {:git, "git://github.com/basho/riak-erlang-client.git", "4e3e63f91dc67fac11b2115c1eb1c0becd895f6c", [branch: 'ku-erlang-17-0']}}
+  "riak_pb": {:git, "git://github.com/basho/riak_pb", "fc18a9b37170431f659e08d66ed78e3f6bbc47ca", [tag: "2.0.0.16"]},
+  "riakc": {:git, "git://github.com/basho/riak-erlang-client.git", "3038f3bcc23dd3b759c0f1124dab6ab4b8f3a9e0", []}}
