@@ -8,7 +8,7 @@ install: mix deps.get
 before_install:
   - mkdir -p vendor/elixir
   - wget -q https://github.com/elixir-lang/elixir/releases/download/v0.13.2/Precompiled.zip && unzip -qq Precompiled.zip -d vendor/elixir
-  - export PATH="$PATH:$PWD/vendor/elixir/bin"
+  - export PATH="$PWD/vendor/elixir/bin:$PATH"
   - export MIX_ENV=test
   - mix local.hex --force
   - wget https://github.com/basho/riak-erlang-client/raw/master/rebar
