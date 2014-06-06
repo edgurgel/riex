@@ -11,8 +11,9 @@ before_install:
   - export PATH="$PATH:$PWD/vendor/elixir/bin"
   - export MIX_ENV=test
   - mix local.hex --force
-  - yes | mix local.rebar
-  - export PATH="$PATH:$HOME/.mix"
+  - wget https://github.com/basho/riak-erlang-client/raw/master/rebar
+  - chmod +x rebar
+  - mv rebar vendor/elixir/bin
   - rebar --version
 script: mix test --exclude integration
 services:
