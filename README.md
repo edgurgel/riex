@@ -113,9 +113,9 @@ Using object
 Riak.delete(pid, o)
 ```
 
-##For a more functionality, check `test/` directory
+For a more functionality, check `test/` directory
 
-##Run tests
+##Tests
 
 ```
 MIX_ENV=test mix do deps.get, test
