@@ -1,10 +1,16 @@
-# Riak Elixir Client
+# Riex
 
-Elixir wrapper for riak-erlang-client
+Elixir wrapper based on [riak-elixir-client](https://github.com/drewkerrigan/riak-elixir-client)
 
-###Setup
+Differences:
 
-#### Prerequisites
+* Pool of connections using [pooler](http://github.com/seth/pooler)
+* Organization of source and tests;
+* Riak.Object is a struct;
+
+#Setup
+
+## Prerequisites
 
 You should have at least one Riak node running. If you plan to use secondary indexes, you'll need to have the leveldb backend enabled:
 
@@ -29,13 +35,13 @@ storage_backend = leveldb
 ...
 ```
 
-#### In your Elixir application
+## In your Elixir application
 
 Add this project as a depency in your mix.exs
 
 ```elixir
 defp deps do
-  [{ :'riak-elixir-client', github: "edgurgel/riak-elixir-client" }]
+  [{ :riex, github: "edgurgel/riex" }]
 end
 ```
 
@@ -51,34 +57,49 @@ Compile
 mix
 ```
 
-###Establishing a Riak connection
+# Usage
+
+You can pass the pid of the established connection or just use the pool (provided by pooler)
+
+Check `config/config.exs` for more info on the pool configuration.
+
+Any call to Riak can omit the pid if you want to use the pool.
+
+For example:
+
+```elixir
+Riak.delete(pid, "user", key)
+
+Riak.delete("user", key)
+```
+
+##Establishing a Riak connection
 
 ```elixir
 {:ok, pid} = Riak.Connection.start_link('127.0.0.1', 8087) # Default values
 ```
 
-###Save a value
+##Save a value
 
-```
-o = RObj.create(bucket: "user", key: "my_key", data: "Drew Kerrigan")
+```elixir
+o = Riak.Object.create(bucket: "user", key: "my_key", data: "Drew Kerrigan")
 Riak.put(pid, o)
-
 ```
 
-###Find an object
+##Find an object
 
-```
+```elixir
 o = Riak.find(pid, "user", "my_key")
 ```
 
-###Update an object
+##Update an object
 
-```
+```elixir
 o = %{o | data: "Something Else"}
 Riak.put(pid, o)
 ```
 
-###Delete an object
+##Delete an object
 
 Using key
 
@@ -92,15 +113,15 @@ Using object
 Riak.delete(pid, o)
 ```
 
-####For a more functionality, check `test/` directory
+##For a more functionality, check `test/` directory
 
-###Run tests
+##Run tests
 
 ```
 MIX_ENV=test mix do deps.get, test
 ```
 
-### License
+# License
 
 Copyright 2012-2013 Drew Kerrigan.
 Copyright 2014 Eduardo Gurgel.
