@@ -1,4 +1,4 @@
-# Riex
+# Riex [![Build Status](https://travis-ci.org/edgurgel/riex.svg?branch=master)](https://travis-ci.org/edgurgel/riex)
 
 Elixir wrapper based on [riak-elixir-client](https://github.com/drewkerrigan/riak-elixir-client)
 
