@@ -1,5 +1,5 @@
-defmodule Riak.Bucket do
-  import Riak.Pool
+defmodule Riex.Bucket do
+  import Riex.Pool
   import :riakc_pb_socket, except: [put: 3, put: 4]
 
   defpool list(pid) when is_pid(pid), do: list_buckets(pid)

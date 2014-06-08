@@ -1,6 +1,6 @@
-defmodule Riak.Object do
+defmodule Riex.Object do
   @moduledoc """
-  The Data wrapper makes it convenient to work with Riak data in Elixir
+  The Data wrapper makes it convenient to work with Riex data in Elixir
   """
   defstruct [bucket: nil, type: nil, key: :undefined, data: nil, metadata: nil, vclock: nil, content_type: "application/json"]
   def get_metadata(obj, key) do
@@ -73,7 +73,7 @@ defmodule Riak.Object do
   end
 
   def from_robj(robj) do
-    %Riak.Object{bucket: :riakc_obj.bucket(robj),
+    %Riex.Object{bucket: :riakc_obj.bucket(robj),
                  type: :riakc_obj.bucket_type(robj),
                  key: :riakc_obj.key(robj),
                  data: :riakc_obj.get_update_value(robj),
@@ -94,10 +94,10 @@ defmodule Riak.Object do
     robj
   end
 
-  def create, do: %Riak.Object{}
+  def create, do: %Riex.Object{}
 
   def create(args) do
-    obj = struct(Riak.Object, args)
+    obj = struct(Riex.Object, args)
     from_robj(to_robj(obj)) # FIXME
   end
 

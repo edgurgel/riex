@@ -1,8 +1,8 @@
-defmodule Riak.Counter do
-  import Riak.Pool
+defmodule Riex.Counter do
+  import Riex.Pool
   import :riakc_pb_socket
 
-  defpool enable(pid, bucket) when is_pid(pid), do: Riak.Bucket.put(pid, "#{bucket}-counter", [{:allow_mult, true}])
+  defpool enable(pid, bucket) when is_pid(pid), do: Riex.Bucket.put(pid, "#{bucket}-counter", [{:allow_mult, true}])
 
   defpool increment(pid, bucket, name, amount) when is_pid(pid) do
     counter_incr(pid, "#{bucket}-counter", name, amount)

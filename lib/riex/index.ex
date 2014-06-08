@@ -1,5 +1,5 @@
-defmodule Riak.Index do
-  import Riak.Pool
+defmodule Riex.Index do
+  import Riex.Pool
   import :riakc_pb_socket
 
   defpool query(pid, bucket, {type, name}, key, opts) when is_pid(pid) do

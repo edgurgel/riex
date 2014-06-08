@@ -1,5 +1,5 @@
-defmodule Riak.Mapred do
-  import Riak.Pool
+defmodule Riex.Mapred do
+  import Riex.Pool
   import :riakc_pb_socket
 
   defpool query(pid, inputs, query) when is_pid(pid), do: mapred(pid, inputs, query)

@@ -6,13 +6,13 @@ Differences:
 
 * Pool of connections using [pooler](http://github.com/seth/pooler)
 * Organization of source and tests;
-* Riak.Object is a struct;
+* Riex.Object is a struct;
 
 #Setup
 
 ## Prerequisites
 
-You should have at least one Riak node running. If you plan to use secondary indexes, you'll need to have the leveldb backend enabled:
+You should have at least one Riex node running. If you plan to use secondary indexes, you'll need to have the leveldb backend enabled:
 
 `app.config` in version 1.4.x-
 
@@ -63,40 +63,40 @@ You can pass the pid of the established connection or just use the pool (provide
 
 Check `config/config.exs` for more info on the pool configuration.
 
-Any call to Riak can omit the pid if you want to use the pool.
+Any call to Riex can omit the pid if you want to use the pool.
 
 For example:
 
 ```elixir
-Riak.delete(pid, "user", key)
+Riex.delete(pid, "user", key)
 
-Riak.delete("user", key)
+Riex.delete("user", key)
 ```
 
-##Establishing a Riak connection
+##Establishing a Riex connection
 
 ```elixir
-{:ok, pid} = Riak.Connection.start_link('127.0.0.1', 8087) # Default values
+{:ok, pid} = Riex.Connection.start_link('127.0.0.1', 8087) # Default values
 ```
 
 ##Save a value
 
 ```elixir
-o = Riak.Object.create(bucket: "user", key: "my_key", data: "Drew Kerrigan")
-Riak.put(pid, o)
+o = Riex.Object.create(bucket: "user", key: "my_key", data: "Drew Kerrigan")
+Riex.put(pid, o)
 ```
 
 ##Find an object
 
 ```elixir
-o = Riak.find(pid, "user", "my_key")
+o = Riex.find(pid, "user", "my_key")
 ```
 
 ##Update an object
 
 ```elixir
 o = %{o | data: "Something Else"}
-Riak.put(pid, o)
+Riex.put(pid, o)
 ```
 
 ##Delete an object
@@ -104,13 +104,13 @@ Riak.put(pid, o)
 Using key
 
 ```elixir
-Riak.delete(pid, "user", key)
+Riex.delete(pid, "user", key)
 ```
 
 Using object
 
 ```elixir
-Riak.delete(pid, o)
+Riex.delete(pid, o)
 ```
 
 For a more functionality, check `test/` directory

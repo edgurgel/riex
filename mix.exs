@@ -1,4 +1,4 @@
-defmodule Riak.Mixfile do
+defmodule Riex.Mixfile do
   use Mix.Project
 
   def project do

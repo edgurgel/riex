@@ -1,4 +1,4 @@
-defmodule Riak.Search do
+defmodule Riex.Search do
   import :riakc_pb_socket
 
   def query(pid, bucket, query, options) when is_pid(pid), do: search(pid, bucket, query, options)

@@ -1,11 +1,11 @@
-defmodule Riak.Pool do
+defmodule Riex.Pool do
   @moduledoc """
   [EXPERIMENTAL]
   This module adds defpool to define functions with a
   lower arity for each function so:
 
-  Riak.put(pid, bucket, key, data) ->
-  Riak.put(bucket, key, data) that calls the previous function
+  Riex.put(pid, bucket, key, data) ->
+  Riex.put(bucket, key, data) that calls the previous function
   with a pid from the pool
   """
   defmacro defpool(args, do: block) do
