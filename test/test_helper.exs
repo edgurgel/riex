@@ -4,14 +4,12 @@ defmodule Riex.Case do
   use ExUnit.CaseTemplate
 
   setup do
-    {:ok, pid } = Riex.Connection.start_link('127.0.0.1', 8087)
+    {:ok, pid } = Riex.Connection.start('127.0.0.1', 8087)
+    on_exit fn ->
+      Riex.Helper.clean! pid
+      Process.exit(pid, :kill)
+    end
     {:ok, pid: pid}
-  end
-
-  teardown context do
-    pid = context[:pid]
-    Riex.Helper.clean!(pid)
-    :ok
   end
 end
 
