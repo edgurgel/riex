@@ -45,6 +45,14 @@ defp deps do
 end
 ```
 
+Also you should add to the list of applications that your project depends on:
+
+```elixir
+def application do
+  [applications: [ :riex ]]
+end
+```
+
 Install dependencies
 
 ```
@@ -54,16 +62,34 @@ mix deps.get
 Compile
 
 ```
-mix
+mix compile
 ```
 
 # Usage
 
-You can pass the pid of the established connection or just use the pool (provided by pooler)
+One can pass the pid of the established connection or just use the pool (provided by pooler). You just need to define your pools using the group "riak. For example having this on your `config/config.exs`:
 
-Check `config/config.exs` for more info on the pool configuration.
+```elixir
+[pooler: [pools: [
+  [ name: :riaklocal1,
+    group: :riak,
+    max_count: 10,
+    init_count: 5,
+    start_mfa: {Riex.Connection, :start_link, []}
+  ],
+   [ name: :riaklocal2,
+    group: :riak,
+    max_count: 15,
+    init_count: 2,
+    start_mfa: {Riex.Connection, :start_link, ['127.0.0.1', 9090]}
+  ] ]
+]]
 
-Any call to Riex can omit the pid if you want to use the pool.
+```
+
+Check Riex [`config/config.exs`](https://github.com/edgurgel/riex/blob/master/config/config.exs) for an example on the pool configuration for a local Riak. More info about configuration on Elixir website: [Application environment and configuration](http://elixir-lang.org/getting_started/mix_otp/10.html#toc_6).
+
+After this pool configuration, any call to Riex can omit the pid if you want to use the pool.
 
 For example:
 
@@ -72,6 +98,8 @@ Riex.delete(pid, "user", key)
 
 Riex.delete("user", key)
 ```
+
+The first call will use the pid you started using `Riex.Connection` and the second call will get a connection from the pool of connections provided by pooler.
 
 ##Establishing a Riex connection
 
