@@ -9,6 +9,9 @@ env:
   - ELIXIR="v0.14.1"
   - ELIXIR="v0.14.2"
   - ELIXIR="v0.14.3"
+  - ELIXIR="v0.15.0"
+services:
+  - riak
 install: mix deps.get
 before_install:
   - mkdir -p vendor/elixir
@@ -18,5 +21,3 @@ before_install:
   - mix local.hex --force
   - rebar --version
 script: mix test
-services:
-  - riak
