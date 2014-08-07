@@ -20,4 +20,4 @@ before_install:
   - export MIX_ENV=test
   - mix local.hex --force
   - rebar --version
-script: mix test
+script: mix test --exclude riak2

@@ -1,5 +1,4 @@
 defmodule Riex do
-  import Riex.Pool
   @moduledoc """
   A Client for Riex.
 
@@ -39,6 +38,9 @@ defmodule Riex do
   The client support secondary indexes, links and siblings. This is
   work in progress, and any help is greatly appreciated.
   """
+  import Riex.Pool
+  require Record
+
   defpool ping(pid) when is_pid(pid), do: :riakc_pb_socket.ping(pid)
 
   defpool put(pid, obj) when is_pid(pid) do
@@ -46,6 +48,23 @@ defmodule Riex do
       {:ok, new_object} -> %{obj | key: :riakc_obj.key(new_object)}
       :ok -> obj
       _ -> nil
+    end
+  end
+
+  defpool update(pid, datatype, type, bucket, key) when is_pid(pid) do
+    :riakc_pb_socket.update_type(pid, {type, bucket},
+                                 key, to_op(datatype))
+  end
+
+  defp to_op(datatype) do
+    case datatype do
+      datatype when Record.record?(datatype, :set) ->
+        :riakc_set.to_op(datatype)
+      datatype when Record.record?(datatype, :counter) ->
+        :riakc_counter.to_op(datatype)
+      datatype when Record.record?(datatype, :map) ->
+        :riakc_map.to_op(datatype)
+      _ -> :undefined
     end
   end
 
@@ -57,6 +76,13 @@ defmodule Riex do
         else
           Riex.Object.from_robj(object)
         end
+      _ -> nil
+    end
+  end
+
+  defpool find(pid, type, bucket, key) when is_pid(pid) do
+    case :riakc_pb_socket.fetch_type(pid, {type, bucket}, key) do
+      {:ok, object} -> object
       _ -> nil
     end
   end
