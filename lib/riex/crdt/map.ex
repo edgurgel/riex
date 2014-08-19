@@ -31,14 +31,14 @@ defmodule Riex.CRDT.Map do
                                       and is_binary(key)
                                       and is_function(fun, 1) do
 
-    :riakc_map.update({key_type, key}, fun, map)
+    :riakc_map.update({key, key_type}, fun, map)
   end
 
   @doc """
   Update the `key` on the `map` by passing the `value`
   The value can be any other CRDT
   """
-  def update(map, key, value) when Record.record?(map, :map)
+  def put(map, key, value) when Record.record?(map, :map)
                               and is_binary(key) do
     key_type = Riex.CRDT.type(value)
     fun = fn _ -> value end

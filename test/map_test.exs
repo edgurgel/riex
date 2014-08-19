@@ -26,10 +26,10 @@ defmodule Riex.CRDT.MapTest do
     set_key = "set_key"
 
     Map.new
-      |> Map.update(reg_key, reg)
-      |> Map.update(flag_key, flag)
-      |> Map.update(counter_key, counter)
-      |> Map.update(set_key, set)
+      |> Map.put(reg_key, reg)
+      |> Map.put(flag_key, flag)
+      |> Map.update(:counter, counter_key, fn _ -> counter end)
+      |> Map.put(set_key, set)
       |> Riex.update("map_bucket", "bucketmap", key)
 
     map = Riex.find("map_bucket", "bucketmap", key)
@@ -55,11 +55,11 @@ defmodule Riex.CRDT.MapTest do
 
     flag = Flag.new |> Flag.enable
     flag_key = "flag_key"
-    nested = Map.new |> Map.update(flag_key, flag)
+    nested = Map.new |> Map.put(flag_key, flag)
     nested_key = "nested_key"
 
     Map.new
-      |> Map.update(nested_key, nested)
+      |> Map.put(nested_key, nested)
       |> Riex.update("map_bucket", "bucketmap", key)
 
     map = Riex.find("map_bucket", "bucketmap", key)
@@ -69,6 +69,5 @@ defmodule Riex.CRDT.MapTest do
     assert :orddict.size(value_map) == 1
 
     assert :orddict.fetch({"nested_key", :map}, value_map) == [{{"flag_key", :flag}, true}]
-    IEx.pry
   end
 end
