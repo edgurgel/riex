@@ -141,6 +141,64 @@ Using object
 Riex.delete(pid, o)
 ```
 
+## CRDTs
+
+Riak Datatypes are avaiable since [Riak 2.0](http://basho.com/introducing-riak-2-0/). The types included are: maps, sets, counters, registers and flags.
+
+### Counters
+
+Considering that you created the "counter_bucket" bucket type using something like:
+
+```
+riak-admin bucket-type create counter_bucket '{"props":{"datatype":"counter"}}'
+riak-admin bucket-type activate counter_bucket
+```
+
+One can create a counter:
+
+```elixir
+Counter.new
+  |> Counter.increment
+  |> Counter.increment(2)
+  |> Riex.update("counter_bucket", "bucketcounter", "my_key")
+```
+
+And fetch the counter:
+
+```elixir
+counter = Riex.find("counter_bucket", "bucketcounter", my_key)
+  |> Counter.value
+```
+
+`counter` will be 3.
+
+### Sets
+
+Considering that you created the "set_bucket" bucket type using something like:
+
+```
+riak-admin bucket-type create set_bucket '{"props":{"datatype":"set"}}'
+riak-admin bucket-type activate set_bucket
+```
+
+Now one can create a set:
+
+```elixir
+Set.new
+  |> Set.put("foo")
+  |> Set.put("bar")
+  |> Riex.update("set_bucket", "bucketset", "my_key")
+```
+
+And fetch the set:
+
+```elixir
+set = Riex.find("set_bucket", "bucketset", "my_key")
+  |> Set.value
+```
+
+Where `set` is an orddict.
+
 For a more functionality, check `test/` directory
 
 ##Tests
