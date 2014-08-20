@@ -154,7 +154,7 @@ riak-admin bucket-type create counter_bucket '{"props":{"datatype":"counter"}}'
 riak-admin bucket-type activate counter_bucket
 ```
 
-One can create a counter:
+One can create a counter (Riex.CRDT.Counter):
 
 ```elixir
 Counter.new
@@ -181,7 +181,7 @@ riak-admin bucket-type create set_bucket '{"props":{"datatype":"set"}}'
 riak-admin bucket-type activate set_bucket
 ```
 
-Now one can create a set:
+Now one can create a set (Riex.CRDT.Set):
 
 ```elixir
 Set.new
@@ -210,7 +210,7 @@ riak-admin bucket-type create set_bucket '{"props":{"datatype":"map"}}'
 riak-admin bucket-type activate map_bucket
 ```
 
-Now one can create a map:
+Now one can create a map (Riex.CRDT.Map):
 
 ```elixir
 register = Register.new("data")
@@ -225,7 +225,6 @@ And fetch the map:
 
 ```elixir
 map = Riex.find("map_bucket", "bucketmap", key) |> Map.value
-
 ```
 
 Where map is an `orddict`.
