@@ -199,6 +199,37 @@ set = Riex.find("set_bucket", "bucketset", "my_key")
 
 Where `set` is an orddict.
 
+### Maps
+
+Maps handle binary keys with any other datatype (map, set, flag, register and counter).
+
+Considering that you created the "map_bucket" bucket type using something like:
+
+```
+riak-admin bucket-type create set_bucket '{"props":{"datatype":"map"}}'
+riak-admin bucket-type activate map_bucket
+```
+
+Now one can create a map:
+
+```elixir
+register = Register.new("data")
+flag = Flag.new |> Flag.enable
+Map.new
+  |> Map.put("k1", register)
+  |> Map.put("k2", flag)
+  |> Riex.update("map_bucket", "bucketmap", "map_key")
+```
+
+And fetch the map:
+
+```elixir
+map = Riex.find("map_bucket", "bucketmap", key) |> Map.value
+
+```
+
+Where map is an `orddict`.
+
 For a more functionality, check `test/` directory
 
 ##Tests
