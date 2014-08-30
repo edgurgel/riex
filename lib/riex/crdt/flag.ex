@@ -27,6 +27,6 @@ defmodule Riex.CRDT.Flag do
   Turns the value to false
   """
   def disable(flag) when Record.record?(flag, :flag) do
-    :riakc_flag.disabled(flag)
+    :riakc_flag.disable(flag)
   end
 end
