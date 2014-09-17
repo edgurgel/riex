@@ -58,11 +58,11 @@ defmodule Riex do
 
   defp to_op(datatype) do
     case datatype do
-      datatype when Record.record?(datatype, :set) ->
+      datatype when Record.is_record(datatype, :set) ->
         :riakc_set.to_op(datatype)
-      datatype when Record.record?(datatype, :counter) ->
+      datatype when Record.is_record(datatype, :counter) ->
         :riakc_counter.to_op(datatype)
-      datatype when Record.record?(datatype, :map) ->
+      datatype when Record.is_record(datatype, :map) ->
         :riakc_map.to_op(datatype)
       _ -> :undefined
     end

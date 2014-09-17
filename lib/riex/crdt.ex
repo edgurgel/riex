@@ -5,6 +5,6 @@ defmodule Riex.CRDT do
   require Record
 
   Enum.each [:set, :map, :counter, :register, :flag], fn t ->
-    def type(value) when Record.record?(value, unquote(t)), do: unquote(t)
+    def type(value) when Record.is_record(value, unquote(t)), do: unquote(t)
   end
 end
