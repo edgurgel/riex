@@ -17,14 +17,14 @@ defmodule Riex.CRDT.Register do
   @doc """
   Extracts current value of `register`
   """
-  def value(register) when Record.record?(register, :register) do
+  def value(register) when Record.is_record(register, :register) do
     :riakc_register.value(register)
   end
 
   @doc """
   Set the `value` on the `register`
   """
-  def set(register, value) when Record.record?(register, :register)
+  def set(register, value) when Record.is_record(register, :register)
                            and is_binary(value) do
     :riakc_register.set(value, register)
   end
