@@ -10,7 +10,8 @@ defmodule Riex.Mixfile do
 
   # Configuration for the OTP application
   def application do
-    [ applications: [ :pooler ] ]
+    [ applications: [ :pooler ],
+      included_applications: [ :riakc ] ]
   end
 
   defp deps do
